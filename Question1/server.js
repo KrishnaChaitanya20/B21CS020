@@ -9,6 +9,12 @@ const categories = ['Phone','Computer','TV','Earphone','Tablet','Charger','Mouse
 
 app.get('/companies/:company/caterogires/:category/products', (req, res) => {
     const company = req.query.company;
+    const category = req.params.category;
+    const top = req.query.top;
+    const page = req.query.page;
+    const minPrice = req.query.minPrice;
+    const maxPrice = req.query.maxPrice;
+
     if (!companies.includes(company)) {
         res.send({
             'status':404,
@@ -17,8 +23,6 @@ app.get('/companies/:company/caterogires/:category/products', (req, res) => {
 
         return;
     }
-
-    const category = req.params.category;
     if (!categories.includes(category)) {
         res.send({
             'status':404,
@@ -27,21 +31,32 @@ app.get('/companies/:company/caterogires/:category/products', (req, res) => {
         return;
     }
 
+
     getdata = async () => {
         const headers={access_token: token}
-        const response = await fetch(`${serverUrl}/companies/${company}/caterogires/${category}/products`, {
-            method: 'GET',
-            headers: headers
-        });
-        const data = await response.json();
+        const base_url=`${serverUrl}/companies/${company}/caterogires/${category}/products`
+        let url = base_url
+        if(top)
+            url = `${base_url}?top=${top}&`
+        if(minPrice)
+            url = `${url}minPrice=${minPrice}&`
+        if(maxPrice)
+            url = `${url}maxPrice=${maxPrice}&`
+
+        try{
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: headers
+            });
+            const data = await response.json();
+        }
+        catch(e){
+            console.log(e)
+        }
         return data;
     }
 
     let data= getdata();
-    const top = req.query.top;
-    const page = req.query.page;
-    const minPrice = req.query.minPrice;
-    const maxPrice = req.query.maxPrice;
 
     if (minPrice) {
         data = data.filter((item) => item.price >= minPrice);
@@ -65,10 +80,41 @@ app.get('/companies/:company/caterogires/:category/products', (req, res) => {
 
 
 app.get('/companies/:company/caterogires/:category/products/:productid', (req, res) => {
+    const company = req.query.company;
+    const category = req.params.category;
+    const productid = req.params.productid;
+
+    if (!companies.includes(company)) {
+        res.send({
+            'status':404,
+            'message':"Company not found"
+        });
+
+        return;
+    }``
+    if (!categories.includes(category)) {
+        res.send({
+            'status':404,
+            'message':"Category not found"
+        });
+        return;
+    }
+
+    getdata = async () => {
+        const headers={access_token: token}
+        const response = await fetch(`${serverUrl}/companies/${company}/caterogires/${category}/products/${productid}`, {
+            method: 'GET',
+            headers: headers
+        });
+        const data = await response.json();
+        return data;
+    }
+
+    let data= getdata();
+
 });
 
-console.log(token);
 
-// app.listen(3000, () => {
-//     console.log('Server is running on port 3000');
-// });
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});

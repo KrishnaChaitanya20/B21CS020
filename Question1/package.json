@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server",
-    "dev": "node --watch server"
+    "start": "node --env-file=.env server",
+    "dev": "node --env-file=.env --watch server"
   },
   "author": "",
   "license": "ISC",
