@@ -111,6 +111,7 @@ app.get('/companies/:company/caterogires/:category/products/:productid', (req, r
     }
 
     let data= getdata();
+    res.send(data);
 
 });
 
